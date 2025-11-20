@@ -6,10 +6,9 @@ Next.js 15와 React 생태계를 학습하기 위해 만드는 **새 개발 흐�
 > 🎯 목표: Next.js + TypeScript + 상태관리 + 폼/검증 + UI 라이브러리까지  
 > 한 번에 익힐 수 있는 개인 학습용 Admin 사이트 만들기
 
----
+<br/>
 
-## 🧱 Tech Stack
-
+### 🧱 Tech Stack
 - **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
@@ -20,9 +19,7 @@ Next.js 15와 React 생태계를 학습하기 위해 만드는 **새 개발 흐�
 - **Code Quality**: ESLint + Prettier
 - **Deployment**: Vercel (예정)
 
----
-
-## ✨ Features (계획)
+### ✨ Features (계획)
 
 - [ ] 로그인 / 인증 레이아웃
 - [ ] 공통 레이아웃 (GNB / Sidebar / Footer)
@@ -32,12 +29,10 @@ Next.js 15와 React 생태계를 학습하기 위해 만드는 **새 개발 흐�
 - [ ] Zustand + React Query 연동
 - [ ] 다크 모드 / 테마 (shadcn/ui 활용)
 
----
-
-## 📂 Folder Structure (초기 + 라우팅 포함)
+### 📂 Folder Structure (초기 + 라우팅 포함)
 
 ```bash
-.
+
 ├── app/
 │   ├── (auth)/                   # 로그인 전
 │   │   └── login/                # 로그인 페이지
@@ -68,8 +63,8 @@ Next.js 15와 React 생태계를 학습하기 위해 만드는 **새 개발 흐�
 └── tsconfig.json
 ```
 
----
-## 🚀 Getting Started
+
+### 🚀 Getting Started
 1.의존성 설치
 ```bash
 npm install
@@ -80,8 +75,8 @@ npm run dev
 # http://localhost:3000 에서 확인
 ```
 
----
-## 📝 Commit Convention
+
+### 📝 Commit Convention
 
 이 프로젝트는 **Conventional Commits** 규칙을 기반으로 합니다.
 
