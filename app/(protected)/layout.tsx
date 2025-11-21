@@ -1,17 +1,25 @@
 // app/(protected)/layout.tsx
-
 import type { ReactNode } from 'react'
-// Sidebar, Header 같은걸 쓸 거면 나중에 여기서 import
+import Header from '@/app/components/common/layout/Header'
+// import Sidebar from '@/app/components/common/layout/Sidebar'
+import RightPanel from '@/app/components/common/layout/RightPanel'
+import Footer from '@/app/components/common/layout/Footer'
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarNav } from '@/app/components/common/layout/SidebarNav'
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-slate-100">
-      {/* 나중에 Sidebar, Header 추가할 자리 */}
-      {/* <Sidebar /> */}
-      <div className="flex flex-1 flex-col">
-        {/* <Header /> */}
-        <main className="flex-1 p-6">{children}</main>
-      </div>
-    </div>
+    <SidebarProvider>
+      <SidebarNav />
+      <SidebarInset className="bg-slate-100">
+        <Header />
+        <main className="flex-1 overflow-auto">
+          <SidebarTrigger />
+          {children}
+        </main>
+        <RightPanel />
+        <Footer />
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

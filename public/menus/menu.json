@@ -1,0 +1,19 @@
+[
+  {
+    "id": 100,
+    "name": "대시보드",
+    "path": "/dashboard"
+  },
+  {
+    "id": 200,
+    "name": "회원관리",
+    "path": "/users",
+    "children": [
+      {
+        "id": 210,
+        "name": "회원 목록",
+        "path": "/users/list"
+      }
+    ]
+  }
+]
