@@ -1,19 +1,46 @@
 [
   {
-    "id": 100,
+    "id": 1,
+    "code": 100,
     "name": "대시보드",
-    "path": "/dashboard"
+    "slug": "dashboard",
+    "path": "/dashboard",
+    "parentId": null,
+    "order": 1,
+    "visible": true,
+    "roles": ["ADMIN"]
   },
   {
-    "id": 200,
+    "id": 2,
+    "code": 200,
     "name": "회원관리",
+    "slug": "users",
     "path": "/users",
-    "children": [
-      {
-        "id": 210,
-        "name": "회원 목록",
-        "path": "/users/list"
-      }
-    ]
+    "parentId": null,
+    "order": 2,
+    "visible": true,
+    "roles": ["ADMIN"]
+  },
+  {
+    "id": 3,
+    "code": 210,
+    "name": "회원 목록",
+    "slug": "list",
+    "path": "/users/list",
+    "parentId": 2,
+    "order": 1,
+    "visible": true,
+    "roles": ["ADMIN"]
+  },
+  {
+    "id": 999,
+    "code": 900,
+    "name": "메뉴관리",
+    "slug": "menu",
+    "path": "/menu",
+    "parentId": null,
+    "order": 3,
+    "visible": true,
+    "roles": ["ADMIN"]
   }
 ]

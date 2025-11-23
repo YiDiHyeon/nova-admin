@@ -25,8 +25,16 @@ export function SidebarNav() {
   useEffect(() => {
     fetch('/menus/menu.json')
       .then((res) => res.json())
-      .then((data: MenuItem[]) => setMenus(data))
+      .then((data) => {
+        // order 순서대로 정렬
+        const sortedData = data.sort((a: MenuItem, b: MenuItem) => (a.order || 0) - (b.order || 0))
+        setMenus(sortedData)
+      })
+      .catch((err) => console.error('Failed to fetch menus:', err))
   }, [])
+
+  // 대메뉴 (parentId가 null인 항목) 필터링
+  const rootMenus = menus.filter((item) => item.parentId === null && item.visible)
 
   return (
     <Sidebar>
@@ -35,26 +43,31 @@ export function SidebarNav() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menus.map((item) => {
+              {rootMenus.map((rootItem) => {
+                // 현재 대메뉴의 자식 메뉴 찾기
+                const children = menus.filter(
+                  (child) => child.parentId === rootItem.id && child.visible,
+                )
+
                 // 1. 자식 메뉴가 있는 경우: Collapsible + SidebarMenuSub 사용
-                if (item.children && item.children.length > 0) {
+                if (children.length > 0) {
                   return (
                     <Collapsible
-                      key={item.id}
+                      key={rootItem.id}
                       asChild
-                      defaultOpen={false} // 기본적으로 닫혀있게 설정 (필요시 true)
+                      defaultOpen={false}
                       className="group/collapsible"
                     >
                       <SidebarMenuItem>
                         <CollapsibleTrigger asChild>
-                          <SidebarMenuButton tooltip={item.name}>
-                            <span>{item.name}</span>
+                          <SidebarMenuButton tooltip={rootItem.name}>
+                            <span>{rootItem.name}</span>
                             <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                           </SidebarMenuButton>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
                           <SidebarMenuSub>
-                            {item.children.map((subItem) => (
+                            {children.map((subItem) => (
                               <SidebarMenuSubItem key={subItem.id}>
                                 <SidebarMenuSubButton asChild>
                                   <Link href={subItem.path ?? '#'}>
@@ -72,10 +85,10 @@ export function SidebarNav() {
 
                 // 2. 자식 메뉴가 없는 경우: 일반 링크
                 return (
-                  <SidebarMenuItem key={item.id}>
+                  <SidebarMenuItem key={rootItem.id}>
                     <SidebarMenuButton asChild>
-                      <Link href={item.path ?? '#'}>
-                        <span>{item.name}</span>
+                      <Link href={rootItem.path ?? '#'}>
+                        <span>{rootItem.name}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

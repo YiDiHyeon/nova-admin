@@ -11,13 +11,13 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (
     <SidebarProvider>
       <SidebarNav />
-      <SidebarInset className="bg-slate-100">
+      <SidebarInset>
         <Header />
         <main className="flex-1 overflow-auto">
           <SidebarTrigger />
           {children}
         </main>
-        <RightPanel />
+        {/*<RightPanel />*/}
         <Footer />
       </SidebarInset>
     </SidebarProvider>
