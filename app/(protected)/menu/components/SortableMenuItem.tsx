@@ -27,7 +27,7 @@ export function SortableMenuItem({ item, childrenMenus, onSelect }: SortableMenu
     <div ref={setNodeRef} style={style} className="mb-2 touch-none">
       {/* 대메뉴 아이템 */}
       <div
-        className="flex cursor-pointer items-center justify-between rounded-md border p-3 hover:bg-gray-50"
+        className="hover:bg-primary/10 flex cursor-pointer items-center justify-between rounded-md border p-3"
         onClick={() => onSelect(item)}
       >
         <div className="flex items-center gap-2">
@@ -49,7 +49,7 @@ export function SortableMenuItem({ item, childrenMenus, onSelect }: SortableMenu
           {childrenMenus.map((childItem) => (
             <div
               key={childItem.id}
-              className="flex cursor-pointer items-center justify-between rounded-md p-2 text-sm hover:bg-gray-50"
+              className="hover:bg-primary/10 flex cursor-pointer items-center justify-between rounded-md p-2 text-sm"
               onClick={(e) => {
                 e.stopPropagation() // 부모 클릭 이벤트 방지
                 onSelect(childItem)

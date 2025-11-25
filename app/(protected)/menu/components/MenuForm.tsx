@@ -1,3 +1,4 @@
+'use client'
 import { Controller, useForm } from 'react-hook-form'
 import { MenuItem } from '@/app/shared/types/menu'
 import { Input } from '@/components/ui/input'
@@ -10,13 +11,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 
 interface MenuFormProps {
+  menus: MenuItem[]
   selectedMenu?: MenuItem | null
 }
 
@@ -27,18 +29,11 @@ const ROLE_OPTIONS = [
   { label: '매니저 (MANAGER)', value: 'MANAGER' },
 ]
 
-export function MenuForm({ selectedMenu }: MenuFormProps) {
-  const [parentMenu, setParentMenu] = useState<MenuItem[]>([])
-
-  // 1. 상위 메뉴 목록 가져오기
-  useEffect(() => {
-    fetch('/menus/menu.json')
-      .then((res) => res.json())
-      .then((data: MenuItem[]) => {
-        const rootMenus = data.filter((item) => item.parentId === null)
-        setParentMenu(rootMenus)
-      })
-  }, [])
+export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
+  // props로 받은 menus에서 대메뉴만 필터링 (useMemo로 최적화)
+  const parentMenu = useMemo(() => {
+    return menus.filter((item) => item.parentId === null)
+  }, [menus])
 
   const {
     register,
@@ -59,9 +54,9 @@ export function MenuForm({ selectedMenu }: MenuFormProps) {
     },
   })
 
-  // 2. selectedMenu가 변경될 때마다 폼 데이터 업데이트
+  // selectedMenu가 변경될 때마다 폼 데이터 업데이트
   useEffect(() => {
-    if (selectedMenu) {
+    if (selectedMenu && selectedMenu.id) {
       reset({
         ...selectedMenu,
       })
