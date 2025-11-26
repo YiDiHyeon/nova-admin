@@ -1,5 +1,5 @@
 'use client'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { MenuItem } from '@/app/shared/types/menu'
 import { Input } from '@/components/ui/input'
 import { Field, FieldContent, FieldLabel } from '@/components/ui/field'
@@ -40,6 +40,7 @@ export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
     handleSubmit,
     control,
     reset,
+    watch,
     formState: { errors },
   } = useForm<MenuItem>({
     defaultValues: {
@@ -53,6 +54,28 @@ export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
       roles: [],
     },
   })
+
+  const watchedSlug = watch('slug')
+  const watchedParentId = watch('parentId')
+
+  const previewPath = useMemo(() => {
+    const currentSlug = watchedSlug || ''
+
+    // 상위 메뉴가 없거나 'root'인 경우
+    if (!watchedParentId || watchedParentId === 0) {
+      return `/${currentSlug}`.replace('//', '/') // 슬러시 중복 방지
+    }
+
+    // 상위 메뉴 찾기
+    const parent = menus.find((m) => m.id === Number(watchedParentId))
+    if (parent) {
+      // 부모의 path가 이미 있다면 활용, 없으면 slug 조합 (데이터 구조에 따라 조정)
+      // 보통 path는 /parent 형식일 테니 바로 합칩니다.
+      return `${parent.path}/${currentSlug}`.replace('//', '/')
+    }
+
+    return `/${currentSlug}`
+  }, [watchedSlug, watchedParentId, menus])
 
   // selectedMenu가 변경될 때마다 폼 데이터 업데이트
   useEffect(() => {
@@ -115,29 +138,6 @@ export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
           {errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
         </Field>
 
-        {/* 슬러그 */}
-        <Field>
-          <FieldLabel>슬러그</FieldLabel>
-          <FieldContent className="text-sm">
-            영문 소문자만 가능하며 특수기호는 하이픈(&#39;-&#39;)만 사용해주세요.
-          </FieldContent>
-          <div className="relative">
-            <Input
-              id="slug"
-              placeholder="슬러그를 입력해주세요"
-              className="h-12"
-              {...register('slug', {
-                required: '슬러그를 입력해주세요.',
-                pattern: {
-                  value: /^[a-z0-9-]+$/,
-                  message: '영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.',
-                },
-              })}
-            />
-          </div>
-          {errors.slug && <p className="text-xs text-red-500">{errors.slug.message}</p>}
-        </Field>
-
         {/* 상위 메뉴 */}
         <Field>
           {/* 상위 메뉴 */}
@@ -163,7 +163,6 @@ export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
                     <SelectItem value="root" className="text-muted-foreground">
                       상위 메뉴 없음 (대메뉴)
                     </SelectItem>
-
                     {parentMenu.map((item) => (
                       <SelectItem value={String(item.id)} key={item.id}>
                         {item.name}
@@ -174,6 +173,35 @@ export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
               </Select>
             )}
           />
+        </Field>
+
+        {/* 슬러그 */}
+        <Field>
+          <FieldLabel>슬러그</FieldLabel>
+          <FieldContent className="text-sm">
+            영문 소문자만 가능하며 특수기호는 하이픈(&#39;-&#39;)만 사용해주세요.
+          </FieldContent>
+          <div className="relative">
+            <Input
+              id="slug"
+              placeholder="슬러그를 입력해주세요"
+              className="h-12"
+              {...register('slug', {
+                required: '슬러그를 입력해주세요.',
+                pattern: {
+                  value: /^[a-z0-9-]+$/,
+                  message: '영문 소문자, 숫자, 하이픈(-)만 사용할 수 있습니다.',
+                },
+              })}
+            />
+          </div>
+          <div className="text-muted-foreground mt-2 flex items-center gap-2 text-sm">
+            <span className="font-medium">전체 경로 미리보기:</span>
+            <code className="bg-muted text-foreground rounded px-1 py-0.5 font-mono">
+              {previewPath === '/' ? '입력 전' : previewPath}
+            </code>
+          </div>
+          {errors.slug && <p className="text-xs text-red-500">{errors.slug.message}</p>}
         </Field>
 
         {/* 권한 (Roles) 추가 */}

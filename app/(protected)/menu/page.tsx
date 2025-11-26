@@ -5,6 +5,7 @@ import MenuForm from '@/app/(protected)/menu/components/MenuForm'
 import MenuList from '@/app/(protected)/menu/components/MenuList'
 import MenuProvider from '@/app/(protected)/menu/components/MenuProvider'
 import { useQuery } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 // API 호출 함수
 const fetchMenus = async (): Promise<MenuItem[]> => {
@@ -45,6 +46,7 @@ export default function MenuPage() {
   return (
     <MenuProvider>
       <MenuContent />
+      <ReactQueryDevtools initialIsOpen={false} />
     </MenuProvider>
   )
 }
