@@ -1,5 +1,5 @@
 'use client'
-import { Controller, useForm, useWatch } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { MenuItem } from '@/app/shared/types/menu'
 import { Input } from '@/components/ui/input'
 import { Field, FieldContent, FieldLabel } from '@/components/ui/field'
@@ -16,6 +16,7 @@ import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface MenuFormProps {
   menus: MenuItem[]
@@ -52,6 +53,38 @@ export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
       order: 0,
       visible: true,
       roles: [],
+    },
+  })
+  type CreateMenuInput = {
+    name: string
+    slug: string
+    parentId: number | null
+    visible: boolean
+    roles: string[]
+  }
+
+  const queryClient = useQueryClient()
+
+  const { mutate } = useMutation({
+    mutationFn: async (values: CreateMenuInput): Promise<MenuItem> => {
+      const res = await fetch('/api/menu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      })
+
+      if (!res.ok) {
+        throw new Error('Failed to create menu')
+      }
+
+      return res.json()
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['menus'] })
+      reset()
+    },
+    onError: () => {
+      alert('실패')
     },
   })
 
@@ -103,7 +136,7 @@ export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
       // TODO: API 호출 - 수정 로직
     } else {
       console.log('저장:', data)
-      // TODO: API 호출 - 저장 로직
+      mutate(data)
     }
   }
 

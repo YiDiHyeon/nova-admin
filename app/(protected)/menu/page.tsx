@@ -21,6 +21,7 @@ function MenuContent() {
     data: menus = [],
     isError,
     isLoading,
+    refetch,
   } = useQuery({
     queryKey: ['menus'],
     queryFn: fetchMenus,
