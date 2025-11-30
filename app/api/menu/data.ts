@@ -81,3 +81,10 @@ export function createMenu(input: CreateMenuInput) {
 
   return newMenu
 }
+
+export function deleteMenu(id: string | number) {
+  const targetId = Number(id) // 숫자로 변환
+
+  // 삭제 로직
+  menus = menus.filter((m) => m.id !== targetId)
+}

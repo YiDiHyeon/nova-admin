@@ -38,7 +38,7 @@ function MenuContent() {
   return (
     <div className="flex flex-row gap-4 p-4">
       <MenuList menus={menus} onSelect={handleMenuClick} />
-      <MenuForm menus={menus} selectedMenu={selectedMenu} />
+      <MenuForm menus={menus} onSuccess={() => setSelectedMenu(null)} selectedMenu={selectedMenu} />
     </div>
   )
 }

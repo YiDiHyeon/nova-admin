@@ -21,6 +21,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 interface MenuFormProps {
   menus: MenuItem[]
   selectedMenu?: MenuItem | null
+  onSuccess?: () => void
 }
 
 // 권한 목록 예시 (실제로는 API에서 받아오거나 상수로 관리)
@@ -30,7 +31,7 @@ const ROLE_OPTIONS = [
   { label: '매니저 (MANAGER)', value: 'MANAGER' },
 ]
 
-export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
+export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormProps) {
   // props로 받은 menus에서 대메뉴만 필터링 (useMemo로 최적화)
   const parentMenu = useMemo(() => {
     return menus.filter((item) => item.parentId === null)
@@ -65,7 +66,7 @@ export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
 
   const queryClient = useQueryClient()
 
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: async (values: CreateMenuInput): Promise<MenuItem> => {
       const res = await fetch('/api/menu', {
         method: 'POST',
@@ -85,6 +86,30 @@ export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
     },
     onError: () => {
       alert('실패')
+    },
+    onSettled: () => {
+      reset()
+    },
+  })
+
+  const { mutate: deleteMenuMutation } = useMutation({
+    mutationFn: async (id: string | number) => {
+      const res = await fetch(`/api/menu/${id}`, {
+        method: 'DELETE',
+      })
+      if (!res.ok) {
+        throw new Error('Failed to delete menu')
+      }
+
+      return res.json()
+    },
+    onSuccess: async () => {
+      // async 추가
+      // await 추가 및 refetchType: 'all' 옵션 등으로 확실하게 갱신
+      await queryClient.invalidateQueries({ queryKey: ['menus'], refetchType: 'all' })
+
+      reset()
+      if (onSuccess) onSuccess()
     },
   })
 
@@ -143,6 +168,7 @@ export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
   const handleDelete = () => {
     if (!selectedMenu?.id) return
     if (confirm('정말 삭제하시겠습니까?')) {
+      deleteMenuMutation(selectedMenu?.id)
       console.log('삭제:', selectedMenu.id)
       // TODO: API 호출 - 삭제 로직
     }
@@ -297,7 +323,9 @@ export default function MenuForm({ menus, selectedMenu }: MenuFormProps) {
         {/* 버튼 영역 */}
         <div className="flex justify-end gap-2 pt-4">
           {isNew ? (
-            <Button type="submit">저장</Button>
+            <Button type="submit" disabled={isPending}>
+              저장
+            </Button>
           ) : (
             <>
               <Button type="button" variant="destructive" onClick={handleDelete}>
