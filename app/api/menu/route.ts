@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createMenu, deleteMenu, getMenus } from '@/app/api/menu/data'
+import { createMenu, getMenus } from '@/app/api/menu/data'
 
 // Next.js가 이 GET 요청의 결과를 캐싱하지 않도록 강제합니다.
 export const dynamic = 'force-dynamic'

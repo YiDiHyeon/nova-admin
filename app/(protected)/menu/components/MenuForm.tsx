@@ -24,6 +24,17 @@ interface MenuFormProps {
   onSuccess?: () => void
 }
 
+type UpdateMenuInput = {
+  name?: string
+  slug?: string
+  parentId?: number | null
+  visible?: boolean
+  roles?: string[]
+  id: number
+  path?: string
+  order?: number
+}
+
 // 권한 목록 예시 (실제로는 API에서 받아오거나 상수로 관리)
 const ROLE_OPTIONS = [
   { label: '관리자 (ADMIN)', value: 'ADMIN' },
@@ -113,6 +124,27 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
     },
   })
 
+  const { mutate: updateMenuMutation } = useMutation({
+    mutationFn: async (values: UpdateMenuInput) => {
+      console.log('1111', values)
+      const res = await fetch(`/api/menu/${values.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(values),
+      })
+      if (!res.ok) {
+        throw new Error('Failed to patch menu')
+      }
+
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['menus'] })
+      reset()
+      if (onSuccess) onSuccess()
+    },
+  })
+
   const watchedSlug = watch('slug')
   const watchedParentId = watch('parentId')
 
@@ -159,6 +191,7 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
     if (selectedMenu && selectedMenu.id > 0) {
       console.log('수정:', data)
       // TODO: API 호출 - 수정 로직
+      updateMenuMutation(data)
     } else {
       console.log('저장:', data)
       mutate(data)
