@@ -1,8 +1,6 @@
 // app/(protected)/layout.tsx
 import type { ReactNode } from 'react'
 import Header from '@/app/components/common/layout/Header'
-// import Sidebar from '@/app/components/common/layout/Sidebar'
-import RightPanel from '@/app/components/common/layout/RightPanel'
 import Footer from '@/app/components/common/layout/Footer'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { SidebarNav } from '@/app/components/common/layout/SidebarNav'

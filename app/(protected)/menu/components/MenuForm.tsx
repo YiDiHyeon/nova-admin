@@ -77,7 +77,7 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
 
   const queryClient = useQueryClient()
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending: isCreatePending } = useMutation({
     mutationFn: async (values: CreateMenuInput): Promise<MenuItem> => {
       const res = await fetch('/api/menu', {
         method: 'POST',
@@ -88,9 +88,9 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
       if (!res.ok) {
         throw new Error('Failed to create menu')
       }
-
       return res.json()
     },
+    mutationKey: ['menu', 'create'],
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['menus'] })
       reset()
@@ -103,7 +103,7 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
     },
   })
 
-  const { mutate: deleteMenuMutation } = useMutation({
+  const { mutate: deleteMenuMutation, isPending: isDeletePending } = useMutation({
     mutationFn: async (id: string | number) => {
       const res = await fetch(`/api/menu/${id}`, {
         method: 'DELETE',
@@ -114,9 +114,9 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
 
       return res.json()
     },
+
+    mutationKey: ['menu', 'delete'],
     onSuccess: async () => {
-      // async 추가
-      // await 추가 및 refetchType: 'all' 옵션 등으로 확실하게 갱신
       await queryClient.invalidateQueries({ queryKey: ['menus'], refetchType: 'all' })
 
       reset()
@@ -124,9 +124,8 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
     },
   })
 
-  const { mutate: updateMenuMutation } = useMutation({
+  const { mutate: updateMenuMutation, isPending: isUpdatePending } = useMutation({
     mutationFn: async (values: UpdateMenuInput) => {
-      console.log('1111', values)
       const res = await fetch(`/api/menu/${values.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -138,6 +137,8 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
 
       return res.json()
     },
+
+    mutationKey: ['menu', 'update'],
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['menus'] })
       reset()
@@ -166,6 +167,8 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
 
     return `/${currentSlug}`
   }, [watchedSlug, watchedParentId, menus])
+
+  const loading = isCreatePending || isDeletePending || isUpdatePending
 
   // selectedMenu가 변경될 때마다 폼 데이터 업데이트
   useEffect(() => {
@@ -202,8 +205,6 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
     if (!selectedMenu?.id) return
     if (confirm('정말 삭제하시겠습니까?')) {
       deleteMenuMutation(selectedMenu?.id)
-      console.log('삭제:', selectedMenu.id)
-      // TODO: API 호출 - 삭제 로직
     }
   }
 
@@ -356,15 +357,17 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
         {/* 버튼 영역 */}
         <div className="flex justify-end gap-2 pt-4">
           {isNew ? (
-            <Button type="submit" disabled={isPending}>
+            <Button type="submit" disabled={loading}>
               저장
             </Button>
           ) : (
             <>
-              <Button type="button" variant="destructive" onClick={handleDelete}>
+              <Button type="button" disabled={loading} variant="destructive" onClick={handleDelete}>
                 삭제
               </Button>
-              <Button type="submit">수정</Button>
+              <Button type="submit" disabled={loading}>
+                수정
+              </Button>
             </>
           )}
         </div>

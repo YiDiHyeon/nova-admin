@@ -6,6 +6,7 @@ import MenuList from '@/app/(protected)/menu/components/MenuList'
 import MenuProvider from '@/app/(protected)/menu/components/MenuProvider'
 import { useQuery } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { MenuLoadingOverlay } from '@/app/(protected)/menu/components/MenuLoadingOverlay'
 
 // API 호출 함수
 const fetchMenus = async (): Promise<MenuItem[]> => {
@@ -21,7 +22,6 @@ function MenuContent() {
     data: menus = [],
     isError,
     isLoading,
-    refetch,
   } = useQuery({
     queryKey: ['menus'],
     queryFn: fetchMenus,
@@ -32,7 +32,12 @@ function MenuContent() {
     setSelectedMenu(null)
   }
 
-  if (isLoading) return <div className="p-4">로딩 중...</div>
+  if (isLoading)
+    return (
+      <div className="p-4">
+        <MenuLoadingOverlay />
+      </div>
+    )
   if (isError) return <div className="p-4 text-red-500">에러가 발생했습니다.</div>
 
   return (
@@ -46,8 +51,11 @@ function MenuContent() {
 export default function MenuPage() {
   return (
     <MenuProvider>
-      <MenuContent />
-      <ReactQueryDevtools initialIsOpen={false} />
+      <div className="relative">
+        <MenuLoadingOverlay />
+        <MenuContent />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </div>
     </MenuProvider>
   )
 }
