@@ -18,6 +18,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { SortableMenuItem } from './SortableMenuItem'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface MenuListProps {
   menus: MenuItem[] // props로 받음
@@ -26,13 +27,31 @@ interface MenuListProps {
 
 export default function MenuList({ menus, onSelect }: MenuListProps) {
   const [rootMenus, setRootMenus] = useState<MenuItem[]>([])
-
+  const [isDirty, setIsDirty] = useState(false)
+  const queryClient = useQueryClient()
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   )
+
+  const { mutate: saveOrder, isPending } = useMutation({
+    mutationFn: (list: MenuItem[]) =>
+      fetch('/api/menu/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(
+          list.map((item, index) => ({
+            id: item.id,
+            order: index + 1,
+          })),
+        ),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['menus'] })
+    },
+  })
 
   // props로 받은 menus가 변경되면 rootMenus 업데이트
   useEffect(() => {
@@ -44,6 +63,7 @@ export default function MenuList({ menus, onSelect }: MenuListProps) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setRootMenus(roots)
     }
+    setIsDirty(false)
   }, [menus])
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -55,11 +75,7 @@ export default function MenuList({ menus, onSelect }: MenuListProps) {
         const newIndex = items.findIndex((item) => item.id === over.id)
 
         const newItems = arrayMove(items, oldIndex, newIndex)
-
-        console.log(
-          'New Order:',
-          newItems.map((item) => item.name),
-        )
+        setIsDirty(true)
         return newItems
       })
     }
@@ -99,6 +115,11 @@ export default function MenuList({ menus, onSelect }: MenuListProps) {
             )}
           </SortableContext>
         </DndContext>
+      </div>
+      <div className="flex justify-end gap-2 pt-4">
+        <Button type="submit" disabled={!isDirty || isPending} onClick={() => saveOrder(rootMenus)}>
+          수정
+        </Button>
       </div>
     </div>
   )

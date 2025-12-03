@@ -77,7 +77,7 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
 
   const queryClient = useQueryClient()
 
-  const { mutate, isPending: isCreatePending } = useMutation({
+  const { mutate: createMutation, isPending: isCreatePending } = useMutation({
     mutationFn: async (values: CreateMenuInput): Promise<MenuItem> => {
       const res = await fetch('/api/menu', {
         method: 'POST',
@@ -102,7 +102,6 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
       reset()
     },
   })
-
   const { mutate: deleteMenuMutation, isPending: isDeletePending } = useMutation({
     mutationFn: async (id: string | number) => {
       const res = await fetch(`/api/menu/${id}`, {
@@ -123,7 +122,6 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
       if (onSuccess) onSuccess()
     },
   })
-
   const { mutate: updateMenuMutation, isPending: isUpdatePending } = useMutation({
     mutationFn: async (values: UpdateMenuInput) => {
       const res = await fetch(`/api/menu/${values.id}`, {
@@ -192,12 +190,9 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
 
   const onsubmit = (data: MenuItem) => {
     if (selectedMenu && selectedMenu.id > 0) {
-      console.log('수정:', data)
-      // TODO: API 호출 - 수정 로직
       updateMenuMutation(data)
     } else {
-      console.log('저장:', data)
-      mutate(data)
+      createMutation(data)
     }
   }
 

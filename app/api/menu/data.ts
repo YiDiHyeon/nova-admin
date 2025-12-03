@@ -138,3 +138,14 @@ export function updateMenu(input: UpdateMenuInput): MenuItem | null {
   menus[index] = updated
   return updated
 }
+
+export function updateMenuOrder(orderList: { id: number; order: number }[]) {
+  const orderMap = new Map(orderList.map((o) => [o.id, o.order]))
+
+  menus = menus
+    .map((m) => ({
+      ...m,
+      order: orderMap.get(m.id) ?? m.order,
+    }))
+    .sort((a, b) => a.order - b.order)
+}

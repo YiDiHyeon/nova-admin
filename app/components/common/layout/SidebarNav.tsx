@@ -14,27 +14,25 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from '@/components/ui/sidebar'
-import { useEffect, useState } from 'react'
 import { MenuItem } from '@/app/shared/types/menu'
 import Link from 'next/link'
 import { ChevronRight } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 
 export function SidebarNav() {
-  const [menus, setMenus] = useState<MenuItem[]>([])
+  const { data: menus = [] } = useQuery<MenuItem[]>({
+    queryKey: ['menus'],
+    queryFn: async () => {
+      const res = await fetch('/api/menu')
+      if (!res.ok) throw new Error('Failed to fetch menus')
+      return res.json()
+    },
+  })
 
-  useEffect(() => {
-    fetch('/menus/menu.json')
-      .then((res) => res.json())
-      .then((data) => {
-        // order 순서대로 정렬
-        const sortedData = data.sort((a: MenuItem, b: MenuItem) => (a.order || 0) - (b.order || 0))
-        setMenus(sortedData)
-      })
-      .catch((err) => console.error('Failed to fetch menus:', err))
-  }, [])
-
-  // 대메뉴 (parentId가 null인 항목) 필터링
-  const rootMenus = menus.filter((item) => item.parentId === null && item.visible)
+  // 대메뉴 (parentId가 null인 항목) 필터링 및 정렬
+  const rootMenus = menus
+    .filter((item) => item.parentId === null && item.visible)
+    .sort((a, b) => (a.order || 0) - (b.order || 0))
 
   return (
     <Sidebar>

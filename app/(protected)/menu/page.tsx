@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import { MenuItem } from '@/app/shared/types/menu'
 import MenuForm from '@/app/(protected)/menu/components/MenuForm'
 import MenuList from '@/app/(protected)/menu/components/MenuList'
-import MenuProvider from '@/app/(protected)/menu/components/MenuProvider'
 import { useQuery } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { MenuLoadingOverlay } from '@/app/(protected)/menu/components/MenuLoadingOverlay'
@@ -50,12 +49,10 @@ function MenuContent() {
 
 export default function MenuPage() {
   return (
-    <MenuProvider>
-      <div className="relative">
-        <MenuLoadingOverlay />
-        <MenuContent />
-        <ReactQueryDevtools initialIsOpen={false} />
-      </div>
-    </MenuProvider>
+    <div className="relative">
+      <MenuLoadingOverlay />
+      <MenuContent />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </div>
   )
 }
