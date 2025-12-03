@@ -37,6 +37,7 @@ export default function MenuList({ menus, onSelect }: MenuListProps) {
   )
 
   const { mutate: saveOrder, isPending } = useMutation({
+    mutationKey: ['menu', 'order'],
     mutationFn: (list: MenuItem[]) =>
       fetch('/api/menu/order', {
         method: 'POST',
@@ -53,7 +54,6 @@ export default function MenuList({ menus, onSelect }: MenuListProps) {
     },
   })
 
-  // props로 받은 menus가 변경되면 rootMenus 업데이트
   useEffect(() => {
     if (menus.length > 0) {
       const roots = menus

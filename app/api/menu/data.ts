@@ -103,7 +103,7 @@ export function createMenu(input: CreateMenuInput) {
 }
 
 export function deleteMenu(id: string | number) {
-  const targetId = Number(id) // 숫자로 변환
+  const targetId = Number(id)
 
   menus = menus.filter((m) => m.id !== targetId)
   globalForMenus.__menus__ = menus
@@ -114,13 +114,11 @@ export function updateMenu(input: UpdateMenuInput): MenuItem | null {
   const index = menus.findIndex((m) => m.id === targetId)
 
   if (index === -1) {
-    // 해당 id가 없으면
     return null
   }
 
   const old = menus[index]
 
-  // parentId나 slug가 바뀌면 path도 다시 계산해줘야 함
   const parentId = input.parentId !== undefined ? input.parentId : old.parentId
   const slug = input.slug !== undefined ? input.slug : old.slug
 
@@ -129,12 +127,11 @@ export function updateMenu(input: UpdateMenuInput): MenuItem | null {
   const newPath = `${parentPath}/${slug}`.replace('//', '/')
 
   const updated: MenuItem = {
-    ...old, // 기존 값들
-    ...input, // 변경 요청 값들 덮어쓰기
-    path: 'wrwerwer', // path는 우리가 다시 계산한 값으로 강제
+    ...old,
+    ...input,
+    path: '',
   }
 
-  // 🔥 진짜 중요한 부분: 배열에 반영
   menus[index] = updated
   return updated
 }
