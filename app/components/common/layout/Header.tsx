@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { AvatarImage } from '@radix-ui/react-avatar'
 import { useRouter } from 'next/navigation'
 import { ThemeButton } from '@/app/components/ThemeButton'
+import { signOut } from 'next-auth/react'
 
 type User = {
   name: string
@@ -22,7 +23,9 @@ export default function Header() {
   }
 
   const handleLogout = () => {
-    router.push('/login')
+    signOut({ redirect: false }).then(() => {
+      router.replace('/login')
+    })
   }
   return (
     <header className="bg-sidebar h-14 w-full shadow">
