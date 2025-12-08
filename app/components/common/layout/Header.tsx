@@ -21,8 +21,9 @@ export default function Header() {
     image: 'easy.png',
   }
 
-  const handleLogout = () => {
-    router.push('/login')
+  const handleLogout = async () => {
+    const res = await fetch('/api/logout', { method: 'POST' })
+    res.ok && router.push('/login')
   }
   return (
     <header className="bg-sidebar h-14 w-full shadow">
