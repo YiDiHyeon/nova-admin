@@ -1,18 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { SignJWT } from 'jose'
+import { createAccessToken, createRefreshToken } from '@/lib/jwt'
 
-const SECRET = new TextEncoder().encode(process.env.JWT_SECRET || '')
 const USER = {
   email: 'test',
   password: '1234',
-}
-
-async function createToken(payload: Record<string, unknown>) {
-  return new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('1h')
-    .sign(SECRET)
 }
 
 export async function POST(req: NextRequest) {
@@ -25,12 +16,23 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const token = await createToken({ email })
+  const accessToken = await createAccessToken(email)
+  const refreshToken = await createRefreshToken(email)
+
   const res = NextResponse.json({ message: 'ok' })
-  res.cookies.set('accessToken', token, {
+  res.cookies.set('accessToken', accessToken, {
     httpOnly: true,
     path: '/',
     maxAge: 60 * 60,
   })
+
+  res.cookies.set('refreshToken', refreshToken, {
+    httpOnly: true,
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7, // 7일
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+  })
+
   return res
 }

@@ -10,5 +10,11 @@ export async function POST(req: NextRequest) {
     maxAge: 0,
   })
 
+  res.cookies.set('refreshToken', '', {
+    httpOnly: true,
+    path: '/',
+    maxAge: 0,
+  })
+
   return res
 }
