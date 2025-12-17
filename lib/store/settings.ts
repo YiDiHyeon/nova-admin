@@ -3,7 +3,6 @@ import { persist } from 'zustand/middleware'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 export type FontScale = 'sm' | 'md' | 'lg'
-export type Density = 'comfortable' | 'compact'
 
 type SettingsState = {
   panelOpen: boolean
@@ -22,7 +21,6 @@ const DEFAULTS = {
   panelOpen: false,
   theme: 'system' as ThemeMode,
   fontScale: 'md' as FontScale,
-  density: 'comfortable' as Density,
 }
 
 export const useSettingsStore = create<SettingsState>()(

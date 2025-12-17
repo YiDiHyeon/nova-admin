@@ -125,10 +125,3 @@
 html[data-font="sm"] { font-size: 14px; }
 html[data-font="md"] { font-size: 16px; }
 html[data-font="lg"] { font-size: 18px; }
-
-html[data-density="compact"] .density {
-    --density-pad: 8px;
-}
-html[data-density="comfortable"] .density {
-    --density-pad: 12px;
-}
