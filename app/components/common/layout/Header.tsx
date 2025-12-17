@@ -4,8 +4,8 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { AvatarImage } from '@radix-ui/react-avatar'
 import { useRouter } from 'next/navigation'
-import { ThemeButton } from '@/app/components/ThemeButton'
 import { signOut } from 'next-auth/react'
+import { useSettingsStore } from '@/lib/store/settings'
 
 type User = {
   name: string
@@ -15,7 +15,7 @@ type User = {
 
 export default function Header() {
   const router = useRouter()
-
+  const togglePanel = useSettingsStore((s) => s.togglePanel)
   const user = {
     name: 'Easy',
     email: 'leedmswl123@gmail.com',
@@ -43,7 +43,9 @@ export default function Header() {
           <Button variant="outline" size="sm" onClick={handleLogout}>
             로그아웃
           </Button>
-          <ThemeButton />
+          <Button variant="outline" size="sm" onClick={togglePanel}>
+            설정
+          </Button>
         </div>
       </div>
     </header>

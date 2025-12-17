@@ -44,6 +44,7 @@
 }
 
 :root {
+    --font-size: 16px;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -119,4 +120,15 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+html[data-font="sm"] { font-size: 14px; }
+html[data-font="md"] { font-size: 16px; }
+html[data-font="lg"] { font-size: 18px; }
+
+html[data-density="compact"] .density {
+    --density-pad: 8px;
+}
+html[data-density="comfortable"] .density {
+    --density-pad: 12px;
 }

@@ -4,6 +4,8 @@ import Header from '@/app/components/common/layout/Header'
 import Footer from '@/app/components/common/layout/Footer'
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import { SidebarNav } from '@/app/components/common/layout/SidebarNav'
+import RightPanel from '@/app/components/common/layout/RightPanel'
+import { SettingsBridge } from '@/app/components/settings/SettingsBridge'
 
 export default function ProtectedLayout({ children }: { children: ReactNode }) {
   return (
@@ -15,7 +17,8 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
           <SidebarTrigger />
           {children}
         </main>
-        {/*<RightPanel />*/}
+        <SettingsBridge />
+        <RightPanel />
         <Footer />
       </SidebarInset>
     </SidebarProvider>
