@@ -33,7 +33,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const body = await req.json()
 
   // body에 id를 안 넘겼다면, 여기서 합쳐줄 수도 있음
-  const input = { ...body, numericId }
+  const input = { ...body }
 
   const updated = updateMenu(input)
 

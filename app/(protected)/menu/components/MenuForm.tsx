@@ -45,8 +45,14 @@ const ROLE_OPTIONS = [
 export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormProps) {
   // props로 받은 menus에서 대메뉴만 필터링 (useMemo로 최적화)
   const parentMenu = useMemo(() => {
-    return menus.filter((item) => item.parentId === null)
-  }, [menus])
+    return menus.filter((item) => {
+      const isRoot = item.parentId === null
+      const isSelected = selectedMenu && item.id === selectedMenu.id
+      // '메뉴관리' 메뉴는 하위 메뉴를 가질 수 없도록 상위 메뉴 후보에서 제외
+      const isMenuManagement = item.name === '메뉴관리'
+      return isRoot && !isSelected && !isMenuManagement
+    })
+  }, [menus, selectedMenu])
 
   const {
     register,
@@ -61,6 +67,7 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
       code: 0,
       name: '',
       slug: '',
+      path: '',
       parentId: null,
       order: 0,
       visible: true,
@@ -189,6 +196,22 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
   }, [selectedMenu, reset])
 
   const onsubmit = (data: MenuItem) => {
+    const pid = data.parentId && true ? Number(data.parentId) : null
+    const parent = menus.find((m) => m.id === pid)
+    const parentPath = parent?.path || ''
+
+    const currentPath = `${parentPath}/${data.slug}`.replace(/\/+/g, '/')
+
+    const isDuplicatePath = menus.some((m) => {
+      const isSelf = selectedMenu && m.id === selectedMenu.id
+      return !isSelf && m.path === currentPath
+    })
+
+    if (isDuplicatePath) {
+      alert(`이미 존재하는 메뉴 경로(${currentPath})입니다. 다른 Slug를 입력해주세요.`)
+      return
+    }
+
     if (selectedMenu && selectedMenu.id > 0) {
       updateMenuMutation(data)
     } else {
