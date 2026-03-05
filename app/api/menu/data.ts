@@ -98,6 +98,7 @@ export function createMenu(input: CreateMenuInput) {
   }
 
   menus.push(newMenu)
+  globalForMenus.__menus__ = menus
 
   return newMenu
 }
@@ -129,10 +130,11 @@ export function updateMenu(input: UpdateMenuInput): MenuItem | null {
   const updated: MenuItem = {
     ...old,
     ...input,
-    path: '',
+    path: newPath,
   }
 
   menus[index] = updated
+  globalForMenus.__menus__ = menus
   return updated
 }
 
@@ -145,4 +147,6 @@ export function updateMenuOrder(orderList: { id: number; order: number }[]) {
       order: orderMap.get(m.id) ?? m.order,
     }))
     .sort((a, b) => a.order - b.order)
+
+  globalForMenus.__menus__ = menus
 }

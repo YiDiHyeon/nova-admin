@@ -1,5 +1,5 @@
 'use client'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import { MenuItem } from '@/app/shared/types/menu'
 import { Input } from '@/components/ui/input'
 import { Field, FieldContent, FieldLabel } from '@/components/ui/field'
@@ -151,8 +151,8 @@ export default function MenuForm({ menus, selectedMenu, onSuccess }: MenuFormPro
     },
   })
 
-  const watchedSlug = watch('slug')
-  const watchedParentId = watch('parentId')
+  const watchedSlug = useWatch({ control, name: 'slug' })
+  const watchedParentId = useWatch({ control, name: 'parentId' })
 
   const previewPath = useMemo(() => {
     const currentSlug = watchedSlug || ''

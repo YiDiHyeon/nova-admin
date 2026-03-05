@@ -8,6 +8,7 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -57,11 +58,16 @@ export function SidebarNav() {
                       className="group/collapsible"
                     >
                       <SidebarMenuItem>
-                        <CollapsibleTrigger asChild>
-                          <SidebarMenuButton tooltip={rootItem.name}>
+                        <SidebarMenuButton asChild tooltip={rootItem.name}>
+                          <Link href={rootItem.path ?? '#'}>
                             <span>{rootItem.name}</span>
-                            <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                          </SidebarMenuButton>
+                          </Link>
+                        </SidebarMenuButton>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuAction showOnHover>
+                            <ChevronRight className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                            <span className="sr-only">{rootItem.name} 하위 메뉴 펼치기</span>
+                          </SidebarMenuAction>
                         </CollapsibleTrigger>
                         <CollapsibleContent>
                           <SidebarMenuSub>
